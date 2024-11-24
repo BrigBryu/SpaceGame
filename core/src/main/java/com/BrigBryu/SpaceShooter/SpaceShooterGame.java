@@ -8,10 +8,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.util.Random;
+
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class SpaceShooterGame extends Game {
 
     GameScreen gameScreen;
+    public static Random random = new Random();
     @Override
     public void create() {
          gameScreen = new GameScreen();

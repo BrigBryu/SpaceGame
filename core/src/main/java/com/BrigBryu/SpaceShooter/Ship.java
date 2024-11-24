@@ -56,11 +56,13 @@ public abstract class Ship implements Boundable{
         return getBoundingBox().overlaps(other);
     }
 
-    public void takeDamage(Laser laser){
+    public boolean takeDamageAndCheckDestroyed(Laser laser){
         if(shield > 0) {
             shield --;
+            return false;
         } else {
             //take damage to health
+            return true;
         }
     }
 
