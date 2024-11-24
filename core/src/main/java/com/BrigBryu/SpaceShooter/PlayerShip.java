@@ -17,7 +17,7 @@ public class PlayerShip extends Ship{
     public Laser[] fireLasers() {
         Laser[] lasers = new Laser[1];
         //one laser from mid
-        lasers[0] =  new Laser(xPosition + width /2, yPosition+height,
+        lasers[0] =  new Laser(boundingBox.x + boundingBox.width /2 - laserWidth/2, boundingBox.y+boundingBox.height,
             laserWidth,laserHeight,laserSpeed,laserTextureRegion);
         timeSinceLastShot = 0;
         return lasers;

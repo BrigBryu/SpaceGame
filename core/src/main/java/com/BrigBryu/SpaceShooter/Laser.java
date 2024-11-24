@@ -2,10 +2,11 @@ package com.BrigBryu.SpaceShooter;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 
-public class Laser {
-    float xCenter, yPosition; //bottom center
-    float width, height;
+public class Laser implements Boundable{
+    protected Rectangle boundingBox;
+
 
     float movementSpeed; //in world units per second
 
@@ -16,15 +17,17 @@ public class Laser {
      * x y = bottom left
      */
     public Laser(float xPosition, float yPosition, float width, float height, float movementSpeed, TextureRegion textureRegion) {
-        this.xCenter = xPosition - width/2;
-        this.yPosition = yPosition;
-        this.width = width;
-        this.height = height;
+        this.boundingBox = new Rectangle(xPosition ,yPosition,width,height);
         this.movementSpeed = movementSpeed;
         this.textureRegion = textureRegion;
     }
 
     public void draw(Batch batch){
-        batch.draw(textureRegion, xCenter, yPosition, width, height);
+        batch.draw(textureRegion, boundingBox.x, boundingBox.y, boundingBox.width, boundingBox.height);
+    }
+
+    @Override
+    public Rectangle getBoundingBox(){
+        return boundingBox;
     }
 }

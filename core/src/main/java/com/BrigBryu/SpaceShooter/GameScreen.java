@@ -1,5 +1,7 @@
 package com.BrigBryu.SpaceShooter;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -10,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -49,7 +52,7 @@ public class GameScreen implements Screen {
         viewport = new StretchViewport(WORLD_WIDTH,WORLD_HEIGHT,camera);
 
         textureAtlasOld = new TextureAtlas("SpaceImiages.atlas");
-        textureAtlas = new TextureAtlas("PixleSpace.atlas");
+        textureAtlas = new TextureAtlas("gray1.atlas");
         backGrounds = new TextureRegion[3];
         backGrounds[0] = textureAtlas.findRegion("black");
         backGrounds[1] = textureAtlas.findRegion("large");
@@ -65,8 +68,8 @@ public class GameScreen implements Screen {
         //Texture regions
         playerShipTextureRegion = textureAtlas.findRegion("playerShipGray");
         enemyShipTextureRegion = textureAtlas.findRegion("shipGray1");
-        playerShieldTextureRegion = textureAtlasOld.findRegion("shield2");
-        enemyShieldTextureRegion = textureAtlasOld.findRegion("shield1");
+        playerShieldTextureRegion = textureAtlas.findRegion("shield");
+        enemyShieldTextureRegion = textureAtlas.findRegion("shield");
         playerLaserTextureRegion = textureAtlas.findRegion("bulletArc1");
         enemyLaserTextureRegion = textureAtlas.findRegion("bulletGray1");
 //        playerShipTextureRegion = textureAtlasOld.findRegion("playerShip3_red");
@@ -83,13 +86,13 @@ public class GameScreen implements Screen {
         int size = 8;
         int sizeLaser = 9;
         playerShip = new PlayerShip(WORLD_WIDTH/2, WORLD_HEIGHT/4,
-            size, size, 2,3,
-            sizeLaser, sizeLaser,45,1f,
+            size, size, 36,3,
+            3, 2,45,1f,
             playerShipTextureRegion,playerShieldTextureRegion, playerLaserTextureRegion);
 
         enemyShip = new EnemyShip(WORLD_WIDTH/2, WORLD_HEIGHT*3/4,
-            size, size, 2,1,
-            sizeLaser, sizeLaser,45,2f,
+            6, 4, 2,1,
+            3, 3,45,2f,
             enemyShipTextureRegion,enemyShieldTextureRegion, enemyLaserTextureRegion);
 
         playerLasers = new LinkedList<>();
@@ -100,15 +103,71 @@ public class GameScreen implements Screen {
     @Override
     public void render(float deltaTime) { //remember back to front
         spriteBatch.begin(); //begins building a batch to draw
+
+        detectInput(deltaTime);
         playerShip.update(deltaTime);
         enemyShip.update(deltaTime);
+
         renderBackGround(deltaTime);
 
         //enemies
         enemyShip.draw(spriteBatch);
         //player
         playerShip.draw(spriteBatch);
-        //lasers create and draw
+
+        //draw lasers and remove old lasers
+        renderLasers(deltaTime);
+
+        //laser and ship collision
+        detectCollisions();
+        //explosions
+        spriteBatch.end();
+    }
+
+    private void detectCollisions(){
+        //check player laser intersects an emeny
+        ListIterator<Laser> iterator = playerLasers.listIterator();
+        while(iterator.hasNext()){
+            Laser laser = iterator.next();
+            if(enemyShip.intersects(laser.getBoundingBox())){
+                enemyShip.takeDamage(laser);
+                iterator.remove();
+            }
+        }
+
+        //check enemy laser intersects player
+        iterator = enemyLasers.listIterator();
+        while(iterator.hasNext()){
+            Laser laser = iterator.next();
+            if(playerShip.intersects(laser.getBoundingBox())){
+                playerShip.takeDamage(laser);
+                iterator.remove();
+            }
+        }
+    }
+
+    private void detectInput(float deltaTime) {
+        float leftLimit, rightLimit, upLimit, downLimit;
+        leftLimit = -playerShip.getBoundingBox().x;
+        downLimit = -playerShip.getBoundingBox().y;
+        rightLimit = WORLD_WIDTH - playerShip.getBoundingBox().x - playerShip.getBoundingBox().width;
+        upLimit = WORLD_HEIGHT/2 - playerShip.getBoundingBox().y - playerShip.getBoundingBox().height;
+
+        if(Gdx.input.isKeyPressed(Input.Keys.D) && rightLimit > 0) {
+            playerShip.translate(Math.min(playerShip.movementSpeed * deltaTime, rightLimit), 0f);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.W) && upLimit > 0) {
+            playerShip.translate(0f, Math.min(playerShip.movementSpeed * deltaTime, upLimit));
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.A) && leftLimit < 0) {
+            playerShip.translate(Math.max(-playerShip.movementSpeed * deltaTime, leftLimit), 0f);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.S) && downLimit < 0) {
+            playerShip.translate(0f,Math.max(-playerShip.movementSpeed * deltaTime, downLimit));
+        }
+    }
+
+    private void renderLasers(float deltaTime){
         //create lasers
         if(playerShip.canFireLaser()){
             Laser[] lasers = playerShip.fireLasers();
@@ -118,13 +177,13 @@ public class GameScreen implements Screen {
             Laser[] lasers = enemyShip.fireLasers();
             enemyLasers.addAll(Arrays.asList(lasers));
         }
-        //draw lasers and remove old lasers
+
         ListIterator<Laser> iterator = playerLasers.listIterator();
         while(iterator.hasNext()){
             Laser laser = iterator.next();
             laser.draw(spriteBatch);
-            laser.yPosition += laser.movementSpeed*deltaTime;
-            if(laser.yPosition > WORLD_HEIGHT) { //is the bottom fo laser off screen
+            laser.boundingBox.y += laser.movementSpeed*deltaTime;
+            if(laser.boundingBox.y > WORLD_HEIGHT) { //is the bottom fo laser off screen
                 iterator.remove(); //remove last served
             }
         }
@@ -133,15 +192,12 @@ public class GameScreen implements Screen {
         while(iterator.hasNext()){
             Laser laser = iterator.next();
             laser.draw(spriteBatch);
-            laser.yPosition -= laser.movementSpeed*deltaTime;
-            if(laser.yPosition + laser.height < 0) { //is the top of laser off screen
+            laser.boundingBox.y -= laser.movementSpeed*deltaTime;
+            if(laser.boundingBox.y + laser.boundingBox.height < 0) { //is the top of laser off screen
                 iterator.remove();
             }
         }
-        //explosions
-        spriteBatch.end();
     }
-
     private void renderBackGround(float deltaTime){
         backGroundOffsets[0] += 0;
         backGroundOffsets[1] += deltaTime * (backGroundMaxScrollingSpeed/4);
