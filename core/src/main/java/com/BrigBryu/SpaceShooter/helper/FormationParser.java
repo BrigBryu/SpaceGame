@@ -25,7 +25,7 @@ public class FormationParser {
         this(12, 12, 8f, 8f, 10f, 88f);
     }
 
-    public List<Ship> getSpawnPoints(String filePath) {
+    public List<Ship> getShips(String filePath) {
         FileHandle file = Gdx.files.internal(filePath);
         if (!file.exists()) {
             System.out.println("cant find formation");
@@ -33,7 +33,7 @@ public class FormationParser {
         }
 
         String[][] formation = createArray(file);
-        return getSpawnPoints(formation);
+        return getShips(formation);
     }
 
     private String[][] createArray(FileHandle file) {
@@ -59,7 +59,7 @@ public class FormationParser {
         return formation;
     }
 
-    private List<Ship> getSpawnPoints(String[][] array) {
+    private List<Ship> getShips(String[][] array) {
         List<Ship> ships = new ArrayList<>();
 
         for (int row = 0; row < array.length; row++) {
@@ -76,4 +76,45 @@ public class FormationParser {
 
         return ships;
     }
+
+    public Ship[][] shipsToGrid(List<Ship> ships) {
+        Ship[][] grid = new Ship[height][width];
+
+        for (Ship ship : ships) {
+            float x = ship.getBoundingBox().x;
+            float y = ship.getBoundingBox().y;
+
+
+            int col = (int)((x - offsetX + gridSpacingX / 2) / gridSpacingX); //add /2 to get in
+            int row = (int)((y - offsetY + gridSpacingY / 2) / gridSpacingY);
+
+            if (col >= 0 && col < width && row >= 0 && row < height) {
+                grid[row][col] = ship;
+            } else {
+                System.out.println("Ship at (" + x + ", " + y + ") is out of grid bounds.");
+            }
+        }
+
+        return grid;
+    }
+
+    public List<Ship> gridToShips(Ship[][] grid) {
+        List<Ship> ships = new ArrayList<>();
+
+        for (int row = 0; row < grid.length; row++) {
+            for (int col = 0; col < grid[row].length; col++) {
+                Ship ship = grid[row][col];
+                if (ship != null) {
+                    float newX = offsetX + col * gridSpacingX;
+                    float newY = offsetY + row * gridSpacingY;
+                    ship.getBoundingBox().x = newX;
+                    ship.getBoundingBox().y = newY;
+                    ships.add(ship);
+                }
+            }
+        }
+
+        return ships;
+    }
+
 }

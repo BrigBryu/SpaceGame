@@ -1,6 +1,7 @@
 package com.BrigBryu.SpaceShooter;
 
-import com.BrigBryu.SpaceShooter.grayModles.GrayEnemy1;
+import com.BrigBryu.SpaceShooter.formations.Formation;
+import com.BrigBryu.SpaceShooter.formations.GrayCircleIn;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 import com.BrigBryu.SpaceShooter.helper.TextureManager;
 import com.badlogic.gdx.Gdx;
@@ -9,14 +10,11 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -52,7 +50,8 @@ public class GameScreen implements Screen {
 
     //game objects
     private PlayerShip playerShip;
-    private LinkedList<Ship> enemyShips;
+    private Formation grayCircleInFormation;
+    //private LinkedList<Ship> enemyShips;
     private LinkedList<Explosion> explosions;
 
     private LinkedList<Laser> playerLasers;
@@ -97,12 +96,13 @@ public class GameScreen implements Screen {
         int sizeLaser = 9;
         playerShip = new PlayerShip(WORLD_WIDTH/2, WORLD_HEIGHT/4,
             size, size, 36,3,
-            3, 2,45,.25f,
+            3, 2,45,1f,
             TextureManager.getTexture("playerShipGray"),
             TextureManager.getTexture("shield"),
             TextureManager.getTexture("bulletArc1"));
 
-        enemyShips = new LinkedList<>();
+//        enemyShips = new LinkedList<>();
+        grayCircleInFormation = new GrayCircleIn();
         playerLasers = new LinkedList<>();
         enemyLasers = new LinkedList<>();
         explosions = new LinkedList<>();
@@ -122,12 +122,16 @@ public class GameScreen implements Screen {
 
         spawnEnemyShips(deltaTime);
 
-        ListIterator<Ship> iterator = enemyShips.listIterator();
+//        ListIterator<Ship> iterator = enemyShips.listIterator();
+        grayCircleInFormation.update(deltaTime);
+        enemyLasers.addAll(grayCircleInFormation.fireLasers());
+        ListIterator<Ship> iterator = grayCircleInFormation.getShipList().listIterator();
+
         while (iterator.hasNext()) {
             Ship enemyShip = iterator.next();
             //moveEnemy(enemyShip, deltaTime);
-            fireEnemyLaser(enemyShip);
-            enemyShip.update(deltaTime);
+            //fireEnemyLaser(enemyShip);
+            //enemyShip.update(deltaTime);
             enemyShip.draw(spriteBatch);
         }
 
@@ -161,7 +165,8 @@ public class GameScreen implements Screen {
     }
 
     private void spawnEnemyShips(float deltaTime){
-        if(enemyShips.isEmpty()) {
+//        if(enemyShips.isEmpty()) {
+        if(grayCircleInFormation.getShipList().isEmpty()) {
             timeSinceEnemiesKilled += deltaTime;
         }
 
@@ -174,8 +179,8 @@ public class GameScreen implements Screen {
 //                TextureManager.getTexture("shield"),
 //                TextureManager.getTexture("bulletGray1")));
             //enemyShips.add(new GrayEnemy1(WORLD_WIDTH / 2, WORLD_HEIGHT * 3 / 4));
-            enemyShips.addAll(formationParser.getSpawnPoints("formations/grayCircle"));
-
+            //enemyShips.addAll(formationParser.getShips("assets/formationsSpawnPoints/grayCircle"));
+            grayCircleInFormation.resetShips();
             timeSinceEnemiesKilled = 0;
         }
     }
@@ -213,7 +218,7 @@ public class GameScreen implements Screen {
         ListIterator<Laser> laserListIterator = playerLasers.listIterator();
         while(laserListIterator.hasNext()){
             Laser laser = laserListIterator.next();
-            ListIterator<Ship> enemyShipListIterator = enemyShips.listIterator();
+            ListIterator<Ship> enemyShipListIterator = grayCircleInFormation.getShipList().listIterator();
             boolean hitOnce = false;
             while (enemyShipListIterator.hasNext()) {
                 Ship enemyShip = enemyShipListIterator.next();
