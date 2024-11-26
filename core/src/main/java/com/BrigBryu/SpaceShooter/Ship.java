@@ -12,19 +12,20 @@ public abstract class Ship implements Boundable{
     protected Rectangle boundingBox;
 
     //graphics
-    TextureRegion shipTextureRegion, shieldTextureRegion, laserTextureRegion;
+    protected TextureRegion shipTextureRegion, shieldTextureRegion, laserTextureRegion;
 
     //laser info
-    float laserWidth, laserHeight;
-    float laserSpeed, laserTimeBetweenShots;
-    float timeSinceLastShot = 0;
+    protected float laserWidth, laserHeight;
+    protected float laserSpeed, laserTimeBetweenShots;
+    protected float timeSinceLastShot = 0;
+    protected float damagePerShot;
 
 
     public Ship(float xCenter, float yCenter,
                 float width, float height,
                 float movementSpeed, int shield,
                 float laserWidth, float laserHeight,
-                float laserSpeed, float laserTimeBetweenShots,
+                float laserSpeed, float laserTimeBetweenShots, float damagePerShot,
                 TextureRegion shipTextureRegion, TextureRegion shieldTextureRegion, TextureRegion laserTextureRegion) {
         this.movementSpeed = movementSpeed;
         this.shield = shield;
@@ -36,6 +37,7 @@ public abstract class Ship implements Boundable{
         this.laserSpeed = laserSpeed;
         this.laserWidth = laserWidth;
         this.laserTimeBetweenShots = laserTimeBetweenShots;
+        this.damagePerShot = damagePerShot;
     }
 
     public void update(float deltaTime){
@@ -57,13 +59,12 @@ public abstract class Ship implements Boundable{
     }
 
     public boolean takeDamageAndCheckDestroyed(Laser laser){
-        if(shield > 0) {
-            shield --;
-            return false;
-        } else {
-            //take damage to health
-            return true;
+        shield -= (int) laser.damage;
+        if(shield <= 0) {
+            shield = 0;
+            return true; //destroyed
         }
+        return false; //still kickin
     }
 
     public void translate(float xChange, float yChange) {
@@ -73,11 +74,11 @@ public abstract class Ship implements Boundable{
     public void draw(Batch batch){
         batch.draw(shipTextureRegion, boundingBox.x, boundingBox.y,boundingBox.width,boundingBox.height);
         //if there is still shield draw shield on top of the ship
-        if(shield > 0){
-            if(boundingBox.width > boundingBox.height) {
-                batch.draw(shieldTextureRegion, boundingBox.x - boundingBox.width/2/2,boundingBox.y-boundingBox.width/2/2,boundingBox.width + boundingBox.width/2,boundingBox.width + boundingBox.width/2);
+        if (shield > 0 && shieldTextureRegion != null) {
+            if (boundingBox.width > boundingBox.height) {
+                batch.draw(shieldTextureRegion, boundingBox.x - boundingBox.width / 2 / 2, boundingBox.y - boundingBox.width / 2 / 2, boundingBox.width + boundingBox.width / 2, boundingBox.width + boundingBox.width / 2);
             } else {
-                batch.draw(shieldTextureRegion, boundingBox.x - boundingBox.height/2/2,boundingBox.y-boundingBox.height/2/2,boundingBox.height + boundingBox.height/2,boundingBox.height+boundingBox.height/2);
+                batch.draw(shieldTextureRegion, boundingBox.x - boundingBox.height / 2 / 2, boundingBox.y - boundingBox.height / 2 / 2, boundingBox.height + boundingBox.height / 2, boundingBox.height + boundingBox.height / 2);
             }
         }
     }

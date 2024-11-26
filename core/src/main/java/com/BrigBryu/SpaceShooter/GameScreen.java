@@ -1,5 +1,8 @@
 package com.BrigBryu.SpaceShooter;
 
+import com.BrigBryu.SpaceShooter.grayModles.GrayEnemy1;
+import com.BrigBryu.SpaceShooter.helper.FormationParser;
+import com.BrigBryu.SpaceShooter.helper.TextureManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -12,6 +15,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -22,15 +27,14 @@ public class GameScreen implements Screen {
     private Camera camera;
     private Viewport viewport;
 
+    //Helper
+    private TextureManager textureManager;
+    private FormationParser formationParser;
+
     //graphics
     private SpriteBatch spriteBatch;
-    private TextureAtlas textureAtlasOld;
-    private TextureAtlas textureAtlas;
-
     private TextureRegion[] backGrounds;
 
-    private TextureRegion playerShipTextureRegion, playerShieldTextureRegion, enemyShipTextureRegion,
-        enemyShieldTextureRegion, playerLaserTextureRegion, enemyLaserTextureRegion;
 
     //Animations
     private TextureRegion[] orangeExplosion;
@@ -45,12 +49,10 @@ public class GameScreen implements Screen {
     //world parameters
     private final int WORLD_WIDTH = 108;
     private final int WORLD_HEIGHT = 192;
-//    private final int WORLD_WIDTH = 72;
-//    private final int WORLD_HEIGHT = 128;
 
     //game objects
     private PlayerShip playerShip;
-    private LinkedList<EnemyShip> enemyShips;
+    private LinkedList<Ship> enemyShips;
     private LinkedList<Explosion> explosions;
 
     private LinkedList<Laser> playerLasers;
@@ -60,51 +62,45 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WORLD_WIDTH,WORLD_HEIGHT,camera);
 
-        textureAtlasOld = new TextureAtlas("SpaceImiages.atlas");
-        textureAtlas = new TextureAtlas("gray1.atlas");
+        //textureAtlas = new TextureAtlas("gray1.atlas");
+        TextureManager.load("gray1.atlas");
         backGrounds = new TextureRegion[3];
-        backGrounds[0] = textureAtlas.findRegion("black");
-        backGrounds[1] = textureAtlas.findRegion("large");
-        backGrounds[2] = textureAtlas.findRegion("small");
+        backGrounds[0] = TextureManager.getTexture("black");
+        backGrounds[1] = TextureManager.getTexture("large");
+        backGrounds[2] = TextureManager.getTexture("small");
+//        backGrounds[0] = textureAtlas.findRegion("black");
+//        backGrounds[1] = textureAtlas.findRegion("large");
+//        backGrounds[2] = textureAtlas.findRegion("small");
 
         orangeExplosion = new TextureRegion[4];
-        orangeExplosion[0] = textureAtlas.findRegion("explosionOrange1");
-        orangeExplosion[1] = textureAtlas.findRegion("explosionOrange2");
-        orangeExplosion[2] = textureAtlas.findRegion("explosionOrange3");
-        orangeExplosion[3] = textureAtlas.findRegion("explosionOrange4");
-
-//        backGrounds[0] = textureAtlasOld.findRegion("Starscape00");
-//        backGrounds[1] = textureAtlasOld.findRegion("Starscape01");
-//        backGrounds[2] = textureAtlasOld.findRegion("Starscape02");
-//        backGrounds[3] = textureAtlasOld.findRegion("Starscape03");
+        orangeExplosion[0] = TextureManager.getTexture("explosionOrange1");
+        orangeExplosion[1] = TextureManager.getTexture("explosionOrange2");
+        orangeExplosion[2] = TextureManager.getTexture("explosionOrange3");
+        orangeExplosion[3] = TextureManager.getTexture("explosionOrange4");
+//        orangeExplosion[0] = textureAtlas.findRegion("explosionOrange1");
+//        orangeExplosion[1] = textureAtlas.findRegion("explosionOrange2");
+//        orangeExplosion[2] = textureAtlas.findRegion("explosionOrange3");
+//        orangeExplosion[3] = textureAtlas.findRegion("explosionOrange4");
 
         backGroundMaxScrollingSpeed = (float) WORLD_HEIGHT / 4;
 
 
         //Texture regions
-        playerShipTextureRegion = textureAtlas.findRegion("playerShipGray");
-        enemyShipTextureRegion = textureAtlas.findRegion("shipGray1");
-        playerShieldTextureRegion = textureAtlas.findRegion("shield");
-        enemyShieldTextureRegion = textureAtlas.findRegion("shield");
-        playerLaserTextureRegion = textureAtlas.findRegion("bulletArc1");
-        enemyLaserTextureRegion = textureAtlas.findRegion("bulletGray1");
-//        playerShipTextureRegion = textureAtlasOld.findRegion("playerShip3_red");
-//        enemyShipTextureRegion = textureAtlasOld.findRegion("enemyRed5");
-//        playerShieldTextureRegion = textureAtlasOld.findRegion("shield2");
-//        enemyShieldTextureRegion = textureAtlasOld.findRegion("shield1");
-//        playerLaserTextureRegion = textureAtlasOld.findRegion("laserRed13");
-//        enemyLaserTextureRegion = textureAtlasOld.findRegion("laserBlue03");
-//        enemyShieldTextureRegion.flip(false,true); //make face down
-
-
-
+//        playerShipTextureRegion = textureAtlas.findRegion("playerShipGray");
+//        enemyShipTextureRegion = textureAtlas.findRegion("shipGray1");
+//        playerShieldTextureRegion = textureAtlas.findRegion("shield");
+//        enemyShieldTextureRegion = textureAtlas.findRegion("shield");
+//        playerLaserTextureRegion = textureAtlas.findRegion("bulletArc1");
+//        enemyLaserTextureRegion = textureAtlas.findRegion("bulletGray1");
         //game objects
         int size = 8;
         int sizeLaser = 9;
         playerShip = new PlayerShip(WORLD_WIDTH/2, WORLD_HEIGHT/4,
             size, size, 36,3,
-            3, 2,45,1f,
-            playerShipTextureRegion,playerShieldTextureRegion, playerLaserTextureRegion);
+            3, 2,45,.25f,
+            TextureManager.getTexture("playerShipGray"),
+            TextureManager.getTexture("shield"),
+            TextureManager.getTexture("bulletArc1"));
 
         enemyShips = new LinkedList<>();
         playerLasers = new LinkedList<>();
@@ -112,6 +108,8 @@ public class GameScreen implements Screen {
         explosions = new LinkedList<>();
 
         spriteBatch = new SpriteBatch(); //Collects all graphical changes and displays all at once
+
+        formationParser = new FormationParser();
     }
 
     @Override
@@ -124,10 +122,10 @@ public class GameScreen implements Screen {
 
         spawnEnemyShips(deltaTime);
 
-        ListIterator<EnemyShip> iterator = enemyShips.listIterator();
+        ListIterator<Ship> iterator = enemyShips.listIterator();
         while (iterator.hasNext()) {
-            EnemyShip enemyShip = iterator.next();
-            moveEnemy(enemyShip, deltaTime);
+            Ship enemyShip = iterator.next();
+            //moveEnemy(enemyShip, deltaTime);
             fireEnemyLaser(enemyShip);
             enemyShip.update(deltaTime);
             enemyShip.draw(spriteBatch);
@@ -169,10 +167,15 @@ public class GameScreen implements Screen {
 
         if(timeSinceEnemiesKilled > waveBreakTime) {
             //spawn wave
-            enemyShips.add(new EnemyShip(WORLD_WIDTH / 2, WORLD_HEIGHT * 3 / 4,
-                6, 4, 20, 1,
-                3, 3, 45, 2f,
-                enemyShipTextureRegion, enemyShieldTextureRegion, enemyLaserTextureRegion));
+//            enemyShips.add(new EnemyShip(WORLD_WIDTH / 2, WORLD_HEIGHT * 3 / 4,
+//                6, 4, 20, 1,
+//                3, 3, 45, 2f,
+//                TextureManager.getTexture("shipGray1"),
+//                TextureManager.getTexture("shield"),
+//                TextureManager.getTexture("bulletGray1")));
+            //enemyShips.add(new GrayEnemy1(WORLD_WIDTH / 2, WORLD_HEIGHT * 3 / 4));
+            enemyShips.addAll(formationParser.getSpawnPoints("formations/grayCircle"));
+
             timeSinceEnemiesKilled = 0;
         }
     }
@@ -210,9 +213,10 @@ public class GameScreen implements Screen {
         ListIterator<Laser> laserListIterator = playerLasers.listIterator();
         while(laserListIterator.hasNext()){
             Laser laser = laserListIterator.next();
-            ListIterator<EnemyShip> enemyShipListIterator = enemyShips.listIterator();
+            ListIterator<Ship> enemyShipListIterator = enemyShips.listIterator();
+            boolean hitOnce = false;
             while (enemyShipListIterator.hasNext()) {
-                EnemyShip enemyShip = enemyShipListIterator.next();
+                Ship enemyShip = enemyShipListIterator.next();
                 if (enemyShip.intersects(laser.getBoundingBox())) {
                     if(enemyShip.takeDamageAndCheckDestroyed(laser)){
                         enemyShipListIterator.remove();
@@ -231,7 +235,10 @@ public class GameScreen implements Screen {
                         }
                         explosions.add(new Explosion(orangeExplosion, rectangle, orangeExplosionTime));
                     }
-                    laserListIterator.remove();
+                    if(!hitOnce) {
+                        laserListIterator.remove();
+                        hitOnce = true;
+                    }
                     //No break because a laser can hit multiple enemies
                 }
             }
@@ -285,7 +292,7 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void fireEnemyLaser(EnemyShip enemyShip) {
+    private void fireEnemyLaser(Ship enemyShip) {
         if(enemyShip.canFireLaser()){
             Laser[] lasers = enemyShip.fireLasers();
             enemyLasers.addAll(Arrays.asList(lasers));
