@@ -10,11 +10,11 @@ public class EnemyShip extends Ship{
 
     public EnemyShip(float xCenter, float yCenter,
                       float width, float height,
-                      float movementSpeed, int shield,
+                      float movementSpeed, int shield, int health,
                       float laserWidth, float laserHeight,
                       float laserSpeed, float laserTimeBetweenShots,
                       TextureRegion shipTextureRegion, TextureRegion shieldTextureRegion, TextureRegion laserTextureRegion) {
-        super(xCenter, yCenter, width, height, movementSpeed, shield, laserWidth, laserHeight, laserSpeed, laserTimeBetweenShots, 10, shipTextureRegion, shieldTextureRegion, laserTextureRegion);
+        super(xCenter, yCenter, width, height, movementSpeed, shield, health, 1, 0, laserWidth, laserHeight, laserSpeed, laserTimeBetweenShots, 10, shipTextureRegion, shieldTextureRegion, laserTextureRegion);
         directionVector = new Vector2(0,-1);
     }
 
@@ -36,15 +36,5 @@ public class EnemyShip extends Ship{
 
     public Vector2 getDirectionVector(){
         return directionVector;
-    }
-
-    @Override
-    public Laser[] fireLasers() {
-        Laser[] lasers = new Laser[1];
-        //one laser from mid
-        lasers[0] =  new Laser(boundingBox.x + boundingBox.width /2 - laserWidth/2, boundingBox.y - laserHeight,
-            laserWidth,laserHeight,laserSpeed, damagePerShot, laserTextureRegion);
-        timeSinceLastShot = 0;
-        return lasers;
     }
 }

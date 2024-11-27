@@ -95,7 +95,7 @@ public class GameScreen implements Screen {
         int size = 8;
         int sizeLaser = 9;
         playerShip = new PlayerShip(WORLD_WIDTH/2, WORLD_HEIGHT/4,
-            size, size, 36,3,
+            size, size, 36,5, 25, 5, 3,
             3, 2,45,1f,
             TextureManager.getTexture("playerShipGray"),
             TextureManager.getTexture("shield"),
@@ -114,6 +114,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float deltaTime) { //remember back to front
+        System.out.println("Player health:" + playerShip.health);
+        System.out.println("Player shield: " + playerShip.shield);
         spriteBatch.begin(); //begins building a batch to draw
         renderBackGround(deltaTime);
 
@@ -269,7 +271,7 @@ public class GameScreen implements Screen {
                             playerShip.boundingBox.width);
                     }
                     explosions.add(new Explosion(orangeExplosion, rectangle, orangeExplosionTime));
-                    playerShip.shield = 3; //TODO quick fix
+                    playerShip.shield = 25; //TODO quick fix
                 }
                 laserListIterator.remove();
             }
@@ -315,7 +317,8 @@ public class GameScreen implements Screen {
         while(iterator.hasNext()){
             Laser laser = iterator.next();
             laser.draw(spriteBatch);
-            laser.boundingBox.y += laser.movementSpeed*deltaTime;
+//            laser.boundingBox.y += laser.movementSpeed*deltaTime;
+            laser.update(deltaTime, true);
             if(laser.boundingBox.y > WORLD_HEIGHT) { //is the bottom fo laser off screen
                 iterator.remove(); //remove last served
             }
@@ -325,7 +328,8 @@ public class GameScreen implements Screen {
         while(iterator.hasNext()){
             Laser laser = iterator.next();
             laser.draw(spriteBatch);
-            laser.boundingBox.y -= laser.movementSpeed*deltaTime;
+//            laser.boundingBox.y -= laser.movementSpeed*deltaTime;
+            laser.update(deltaTime, false);
             if(laser.boundingBox.y + laser.boundingBox.height < 0) { //is the top of laser off screen
                 iterator.remove();
             }
