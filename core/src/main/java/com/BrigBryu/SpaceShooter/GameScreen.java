@@ -95,7 +95,7 @@ public class GameScreen implements Screen {
         int size = 8;
         int sizeLaser = 9;
         playerShip = new PlayerShip(WORLD_WIDTH/2, WORLD_HEIGHT/4,
-            size, size, 36,5, 25, 5, 3,
+            size, size, 36,5, 25, 2, 1,
             3, 2,45,1f,
             TextureManager.getTexture("playerShipGray"),
             TextureManager.getTexture("shield"),
@@ -126,7 +126,7 @@ public class GameScreen implements Screen {
 
 //        ListIterator<Ship> iterator = enemyShips.listIterator();
         grayCircleInFormation.update(deltaTime);
-        enemyLasers.addAll(grayCircleInFormation.fireLasers());
+        enemyLasers.addAll(grayCircleInFormation.fireLasers(deltaTime));
         ListIterator<Ship> iterator = grayCircleInFormation.getShipList().listIterator();
 
         while (iterator.hasNext()) {

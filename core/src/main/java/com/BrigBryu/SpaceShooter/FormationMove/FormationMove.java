@@ -1,0 +1,25 @@
+package com.BrigBryu.SpaceShooter.FormationMove;
+
+import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.helper.FormationParser;
+
+import java.util.List;
+
+public abstract class FormationMove {
+    protected static FormationParser parser = new FormationParser();
+    protected List<Ship> shipList;
+    public FormationMove(FormationParser parser) {
+        FormationMove.parser = parser;
+    }
+
+    public void updateShips(List<Ship> shipList) {
+        this.shipList = shipList;
+    }
+
+    public void update(float deltaTime, List<Ship> shipList){
+        this.shipList = shipList;
+        updateShips(deltaTime);
+    }
+
+    public abstract void updateShips(float deltaTime);
+}
