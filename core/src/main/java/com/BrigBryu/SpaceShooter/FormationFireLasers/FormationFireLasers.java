@@ -11,11 +11,7 @@ public abstract class FormationFireLasers {
     protected static FormationParser parser = new FormationParser();
     protected List<Ship> shipList;
     public FormationFireLasers(FormationParser parser) {
-        FormationMove.parser = parser;
-    }
-
-    public void updateShips(List<Ship> shipList) {
-        this.shipList = shipList;
+        FormationFireLasers.parser = parser;
     }
 
     public List<Laser> update(float deltaTime, List<Ship> shipList){

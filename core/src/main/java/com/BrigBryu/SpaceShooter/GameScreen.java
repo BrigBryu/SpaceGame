@@ -95,7 +95,7 @@ public class GameScreen implements Screen {
         int size = 8;
         int sizeLaser = 9;
         playerShip = new PlayerShip(WORLD_WIDTH/2, WORLD_HEIGHT/4,
-            size, size, 36,5, 25, 2, 1,
+            size, size, 36,5, 25, 1, 0,
             3, 2,45,1f,
             TextureManager.getTexture("playerShipGray"),
             TextureManager.getTexture("shield"),

@@ -12,10 +12,6 @@ public abstract class FormationMove {
         FormationMove.parser = parser;
     }
 
-    public void updateShips(List<Ship> shipList) {
-        this.shipList = shipList;
-    }
-
     public void update(float deltaTime, List<Ship> shipList){
         this.shipList = shipList;
         updateShips(deltaTime);
