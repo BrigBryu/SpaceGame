@@ -1,7 +1,7 @@
 package com.BrigBryu.SpaceShooter.FormationFireLasers;
 
-import com.BrigBryu.SpaceShooter.Laser;
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Laser;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
 import java.util.ArrayList;
@@ -13,8 +13,9 @@ public class FireRowByRowBottomUp extends FormationFireLasers {
     private float timeBetweenShots = 2f; // Delay between firing each row
     private int currentRow = 0;          // Start at the top row
 
-    public FireRowByRowBottomUp(FormationParser parser) {
+    public FireRowByRowBottomUp(FormationParser parser, float difficulty) {
         super(parser);
+        timeBetweenShots *= difficulty;
     }
 
     @Override

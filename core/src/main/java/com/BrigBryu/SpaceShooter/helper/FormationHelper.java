@@ -1,6 +1,6 @@
 package com.BrigBryu.SpaceShooter.helper;
 
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 
 public class FormationHelper {
     //HELPER METHODS FOR FORMATION UPDATES

@@ -8,7 +8,8 @@ public class GrayCircleIn extends Formation{
 
     public GrayCircleIn() {
 //        super(new MoveIn(parser), new FireIfGroup(parser));
-        super(new MoveIn(parser), new FireAllDiagonalsCycle(parser));
+        //difficulty higer than 1 makes more time between shots lower than 1 makes less time between shots
+        super(new MoveIn(parser), new FireAllDiagonalsCycle(parser, 1f));
 
     }
 

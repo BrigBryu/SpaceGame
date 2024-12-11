@@ -1,11 +1,11 @@
-package com.BrigBryu.SpaceShooter;
+package com.BrigBryu.SpaceShooter.gameObjects;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
-public abstract class Ship implements Boundable{
+public abstract class Ship implements Boundable {
     //ship stuff
     float movementSpeed; //world units per second
     /**
@@ -214,5 +214,28 @@ public abstract class Ship implements Boundable{
 
     public void addShield(int amount) {
         shield += amount;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public void setMovementSpeed(float movementSpeed) {
+        this.movementSpeed = movementSpeed;
+    }
+
+    public int getShield() {
+        return shield;
+    }
+
+    public void setShield(int shield){
+        this.shield = shield;
+    }
+    public float getMovementSpeed(){
+        return movementSpeed;
     }
 }

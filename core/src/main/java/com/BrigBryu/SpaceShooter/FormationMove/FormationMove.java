@@ -1,6 +1,6 @@
 package com.BrigBryu.SpaceShooter.FormationMove;
 
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
 import java.util.List;

@@ -2,6 +2,7 @@ package com.BrigBryu.SpaceShooter;
 
 import com.BrigBryu.SpaceShooter.formations.Formation;
 import com.BrigBryu.SpaceShooter.formations.GrayCircleIn;
+import com.BrigBryu.SpaceShooter.gameObjects.*;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 import com.BrigBryu.SpaceShooter.helper.TextureManager;
 import com.badlogic.gdx.Gdx;
@@ -56,6 +57,10 @@ public class GameScreen implements Screen {
 
     private LinkedList<Laser> playerLasers;
     private LinkedList<Laser> enemyLasers;
+
+    //temp
+    private boolean deathTimerRun = false;
+    private  float timeSinceDeath = 0;
 
     public GameScreen(){
         camera = new OrthographicCamera();
@@ -114,15 +119,28 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float deltaTime) { //remember back to front
-        System.out.println("Player health:" + playerShip.health);
-        System.out.println("Player shield: " + playerShip.shield);
+        //temp
+        System.out.print("Player health: " + playerShip.getHealth());
+        System.out.print(" Player shield: " + playerShip.getShield() + "\n\n");
+        if(deathTimerRun) {
+            System.out.println(timeSinceDeath + "adding " + deltaTime);
+            if (timeSinceDeath > 2) {
+                throw new RuntimeException("You Died!!!");
+            } else {
+                timeSinceDeath +=  deltaTime;
+            }
+        }
+
+
         spriteBatch.begin(); //begins building a batch to draw
         renderBackGround(deltaTime);
 
-        detectInput(deltaTime);
-        playerShip.update(deltaTime);
+        if(!deathTimerRun) {
+            detectInput(deltaTime);
+            playerShip.update(deltaTime);
 
-        spawnEnemyShips(deltaTime);
+            spawnEnemyShips(deltaTime);
+        }
 
 //        ListIterator<Ship> iterator = enemyShips.listIterator();
         grayCircleInFormation.update(deltaTime);
@@ -139,14 +157,17 @@ public class GameScreen implements Screen {
 
 
 
-        //player
-        playerShip.draw(spriteBatch);
 
+        //player
+        if(!deathTimerRun) {
+            playerShip.draw(spriteBatch);
+        }
         //draw lasers and remove old lasers
         renderLasers(deltaTime);
 
         //laser and ship collision
         detectCollisions();
+
         //explosions
         updateAndRenderExplosions(deltaTime);
 
@@ -194,8 +215,8 @@ public class GameScreen implements Screen {
         rightLimit = WORLD_WIDTH - enemyShip.getBoundingBox().x - enemyShip.getBoundingBox().width;
         upLimit = WORLD_HEIGHT - enemyShip.getBoundingBox().y - enemyShip.getBoundingBox().height;
 
-        float moveX = enemyShip.getDirectionVector().x * enemyShip.movementSpeed * deltaTime;
-        float moveY = enemyShip.getDirectionVector().y * enemyShip.movementSpeed * deltaTime;
+        float moveX = enemyShip.getDirectionVector().x * enemyShip.getMovementSpeed() * deltaTime;
+        float moveY = enemyShip.getDirectionVector().y * enemyShip.getMovementSpeed() * deltaTime;
 
         if(moveX > 0) {
             //moving right
@@ -227,18 +248,19 @@ public class GameScreen implements Screen {
                 if (enemyShip.intersects(laser.getBoundingBox())) {
                     if(enemyShip.takeDamageAndCheckDestroyed(laser)){
                         enemyShipListIterator.remove();
+                        //add a square explosion
                         Rectangle rectangle = new Rectangle(
-                            enemyShip.boundingBox.x,
-                            enemyShip.boundingBox.y,
-                            enemyShip.boundingBox.height,
-                            enemyShip.boundingBox.height);
+                            enemyShip.getBoundingBox().x,
+                            enemyShip.getBoundingBox().y,
+                            enemyShip.getBoundingBox().height,
+                            enemyShip.getBoundingBox().height);
 
-                        if(enemyShip.boundingBox.width > enemyShip.boundingBox.height) {
+                        if(enemyShip.getBoundingBox().width > enemyShip.getBoundingBox().height) {
                             rectangle = new Rectangle(
-                                enemyShip.boundingBox.x,
-                                enemyShip.boundingBox.y,
-                                enemyShip.boundingBox.width,
-                                enemyShip.boundingBox.width);
+                                enemyShip.getBoundingBox().x,
+                                enemyShip.getBoundingBox().y,
+                                enemyShip.getBoundingBox().width,
+                                enemyShip.getBoundingBox().width);
                         }
                         explosions.add(new Explosion(orangeExplosion, rectangle, orangeExplosionTime));
                     }
@@ -253,25 +275,26 @@ public class GameScreen implements Screen {
 
         //check enemy laser intersects player
         laserListIterator = enemyLasers.listIterator();
-        while(laserListIterator.hasNext()){
+        while(laserListIterator.hasNext() && !deathTimerRun){
             Laser laser = laserListIterator.next();
             if(playerShip.intersects(laser.getBoundingBox())){
                 if(playerShip.takeDamageAndCheckDestroyed(laser)){
                     Rectangle rectangle = new Rectangle(
-                        playerShip.boundingBox.x,
-                        playerShip.boundingBox.y,
-                        playerShip.boundingBox.height,
-                        playerShip.boundingBox.height);
+                        playerShip.getBoundingBox().x,
+                        playerShip.getBoundingBox().y,
+                        playerShip.getBoundingBox().height,
+                        playerShip.getBoundingBox().height);
 
-                    if(playerShip.boundingBox.width > playerShip.boundingBox.height) {
+                    if(playerShip.getBoundingBox().width > playerShip.getBoundingBox().height) {
                         rectangle = new Rectangle(
-                            playerShip.boundingBox.x,
-                            playerShip.boundingBox.y,
-                            playerShip.boundingBox.width,
-                            playerShip.boundingBox.width);
+                            playerShip.getBoundingBox().x,
+                            playerShip.getBoundingBox().y,
+                            playerShip.getBoundingBox().width,
+                            playerShip.getBoundingBox().width);
                     }
                     explosions.add(new Explosion(orangeExplosion, rectangle, orangeExplosionTime));
-                    playerShip.shield = 25; //TODO quick fix
+                    deathTimerRun = true;
+//                    playerShip.setShield(25); //TODO quick fix for death no death!
                 }
                 laserListIterator.remove();
             }
@@ -286,16 +309,16 @@ public class GameScreen implements Screen {
         upLimit = WORLD_HEIGHT/2f - playerShip.getBoundingBox().y - playerShip.getBoundingBox().height;
 
         if(Gdx.input.isKeyPressed(Input.Keys.D) && rightLimit > 0) {
-            playerShip.translate(Math.min(playerShip.movementSpeed * deltaTime, rightLimit), 0f);
+            playerShip.translate(Math.min(playerShip.getMovementSpeed() * deltaTime, rightLimit), 0f);
         }
         if(Gdx.input.isKeyPressed(Input.Keys.W) && upLimit > 0) {
-            playerShip.translate(0f, Math.min(playerShip.movementSpeed * deltaTime, upLimit));
+            playerShip.translate(0f, Math.min(playerShip.getMovementSpeed() * deltaTime, upLimit));
         }
         if(Gdx.input.isKeyPressed(Input.Keys.A) && leftLimit < 0) {
-            playerShip.translate(Math.max(-playerShip.movementSpeed * deltaTime, leftLimit), 0f);
+            playerShip.translate(Math.max(-playerShip.getMovementSpeed() * deltaTime, leftLimit), 0f);
         }
         if(Gdx.input.isKeyPressed(Input.Keys.S) && downLimit < 0) {
-            playerShip.translate(0f,Math.max(-playerShip.movementSpeed * deltaTime, downLimit));
+            playerShip.translate(0f,Math.max(-playerShip.getMovementSpeed() * deltaTime, downLimit));
         }
     }
 
@@ -319,7 +342,7 @@ public class GameScreen implements Screen {
             laser.draw(spriteBatch);
 //            laser.boundingBox.y += laser.movementSpeed*deltaTime;
             laser.update(deltaTime, true);
-            if(laser.boundingBox.y > WORLD_HEIGHT) { //is the bottom fo laser off screen
+            if(laser.getBoundingBox().y > WORLD_HEIGHT) { //is the bottom fo laser off screen
                 iterator.remove(); //remove last served
             }
         }
@@ -330,7 +353,7 @@ public class GameScreen implements Screen {
             laser.draw(spriteBatch);
 //            laser.boundingBox.y -= laser.movementSpeed*deltaTime;
             laser.update(deltaTime, false);
-            if(laser.boundingBox.y + laser.boundingBox.height < 0) { //is the top of laser off screen
+            if(laser.getBoundingBox().y + laser.getBoundingBox().height < 0) { //is the top of laser off screen
                 iterator.remove();
             }
         }

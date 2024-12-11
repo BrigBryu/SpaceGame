@@ -1,8 +1,8 @@
-package com.BrigBryu.SpaceShooter;
+package com.BrigBryu.SpaceShooter.gameObjects;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class PlayerShip extends Ship{
+public class PlayerShip extends Ship {
 
     boolean shieldBroke = false;
 
@@ -17,17 +17,18 @@ public class PlayerShip extends Ship{
 
     @Override
     public boolean takeDamageAndCheckDestroyed(Laser laser){
-        shield -= (int) laser.damage;
-        if(shield <= 0) {
-            if(shieldBroke) {
-                shield = 0;
-                return true; //destroyed
-            } else {
-                shieldBroke = true;
-                shield = 0;
-                return false;
+        System.out.println("taking damage " + laser.damage);
+        //take damage to health only if there is no shield
+        if(shield > 0) {
+            shield = (int) Math.max(0, shield - laser.damage);
+        } else if(health > 0) {
+            if(health - laser.damage == 0){
+                health = 0;
+                return true;
             }
-
+            health = (int) Math.max(0, health - laser.damage);
+        } else {
+            return true;
         }
         return false; //still kickin
     }

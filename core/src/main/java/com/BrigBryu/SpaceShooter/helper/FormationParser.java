@@ -1,6 +1,6 @@
 package com.BrigBryu.SpaceShooter.helper;
 
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 

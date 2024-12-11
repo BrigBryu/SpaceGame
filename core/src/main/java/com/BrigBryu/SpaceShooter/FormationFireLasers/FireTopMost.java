@@ -1,7 +1,7 @@
 package com.BrigBryu.SpaceShooter.FormationFireLasers;
 
-import com.BrigBryu.SpaceShooter.Laser;
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Laser;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
 import java.util.ArrayList;
@@ -13,8 +13,9 @@ public class FireTopMost extends FormationFireLasers {
     private float timeBetweenShots = .7f;
     private int currentRow = -1;
 
-    public FireTopMost(FormationParser parser) {
+    public FireTopMost(FormationParser parser, float difficulty) {
         super(parser);
+        timeBetweenShots *= difficulty;
     }
 
     @Override

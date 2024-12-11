@@ -1,8 +1,8 @@
 package com.BrigBryu.SpaceShooter.helper;
 
-import com.BrigBryu.SpaceShooter.Ship;
-import com.BrigBryu.SpaceShooter.grayModles.GrayEnemy1;
-import com.BrigBryu.SpaceShooter.grayModles.GrayEnemy2;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.grayModles.GrayEnemy1;
+import com.BrigBryu.SpaceShooter.gameObjects.grayModles.GrayEnemy2;
 
 public class EnemyFactory {
     public static Ship createEnemy(String type, float x, float y) {

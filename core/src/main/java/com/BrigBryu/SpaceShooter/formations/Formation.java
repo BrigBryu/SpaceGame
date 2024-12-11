@@ -2,8 +2,8 @@ package com.BrigBryu.SpaceShooter.formations;
 
 import com.BrigBryu.SpaceShooter.FormationFireLasers.FormationFireLasers;
 import com.BrigBryu.SpaceShooter.FormationMove.FormationMove;
-import com.BrigBryu.SpaceShooter.Laser;
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Laser;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

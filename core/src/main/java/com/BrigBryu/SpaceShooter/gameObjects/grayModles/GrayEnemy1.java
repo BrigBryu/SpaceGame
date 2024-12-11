@@ -1,10 +1,7 @@
-package com.BrigBryu.SpaceShooter.grayModles;
+package com.BrigBryu.SpaceShooter.gameObjects.grayModles;
 
-import com.BrigBryu.SpaceShooter.Laser;
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.TextureManager;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class GrayEnemy1 extends Ship {
     //levels of enemy

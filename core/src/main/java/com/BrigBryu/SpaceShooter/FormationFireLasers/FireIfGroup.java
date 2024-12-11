@@ -1,7 +1,7 @@
 package com.BrigBryu.SpaceShooter.FormationFireLasers;
 
-import com.BrigBryu.SpaceShooter.Laser;
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Laser;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.FormationHelper;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
@@ -13,8 +13,9 @@ public class FireIfGroup extends FormationFireLasers {
     float timeSinceLastShot = 0;
     float timeBetweenShots = 3;
 
-    public FireIfGroup(FormationParser parser) {
+    public FireIfGroup(FormationParser parser, float difficulty) {
         super(parser);
+        timeBetweenShots *= difficulty;
     }
 
     @Override

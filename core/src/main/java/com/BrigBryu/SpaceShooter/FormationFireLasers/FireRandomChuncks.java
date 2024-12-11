@@ -1,7 +1,7 @@
 package com.BrigBryu.SpaceShooter.FormationFireLasers;
 
-import com.BrigBryu.SpaceShooter.Laser;
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Laser;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
 import java.util.ArrayList;
@@ -17,8 +17,9 @@ public class FireRandomChuncks extends FormationFireLasers {
 
     private int rowWidth = 2;
 
-    public FireRandomChuncks(FormationParser parser) {
+    public FireRandomChuncks(FormationParser parser, float difficulty) {
         super(parser);
+        timeBetweenShots *= difficulty;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.BrigBryu.SpaceShooter.FormationFireLasers;
 
-import com.BrigBryu.SpaceShooter.Laser;
-import com.BrigBryu.SpaceShooter.Ship;
+import com.BrigBryu.SpaceShooter.gameObjects.Laser;
+import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
 import java.util.ArrayList;
@@ -24,8 +24,9 @@ public class FireAllDiagonalsCycle extends FormationFireLasers {
     // 2: top-right to bottom-left (/)
     // 3: bottom-left to top-right (/ reversed)
 
-    public FireAllDiagonalsCycle(FormationParser parser) {
+    public FireAllDiagonalsCycle(FormationParser parser, float difficulty) {
         super(parser);
+        timeBetweenShots *= difficulty;
     }
 
     @Override
