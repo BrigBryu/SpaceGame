@@ -208,7 +208,7 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void moveEnemy(EnemyShip enemyShip, float deltaTime){
+    private void moveEnemy(EnemyShipOld enemyShip, float deltaTime){
         float leftLimit, rightLimit, upLimit, downLimit;
         leftLimit = -enemyShip.getBoundingBox().x;
         downLimit = WORLD_HEIGHT/2f-enemyShip.getBoundingBox().y; //bound sto top half of screen

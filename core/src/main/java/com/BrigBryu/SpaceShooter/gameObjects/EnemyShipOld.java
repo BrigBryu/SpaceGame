@@ -4,12 +4,12 @@ import com.BrigBryu.SpaceShooter.SpaceShooterGame;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class EnemyShip extends Ship {
+public class EnemyShipOld extends Ship {
     Vector2 directionVector;
     float timeSinceLastDirectionChange = 0;
     float directionChangeFrequency = 0.75f;
 
-    public EnemyShip(float xCenter, float yCenter,
+    public EnemyShipOld(float xCenter, float yCenter,
                       float width, float height,
                       float movementSpeed, int shield, int health,
                       float laserWidth, float laserHeight,

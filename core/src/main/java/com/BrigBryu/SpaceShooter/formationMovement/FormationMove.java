@@ -1,4 +1,4 @@
-package com.BrigBryu.SpaceShooter.FormationMove;
+package com.BrigBryu.SpaceShooter.formationMovement;
 
 import com.BrigBryu.SpaceShooter.gameObjects.Ship;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
