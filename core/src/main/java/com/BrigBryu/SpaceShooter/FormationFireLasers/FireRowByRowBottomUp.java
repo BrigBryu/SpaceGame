@@ -13,8 +13,8 @@ public class FireRowByRowBottomUp extends FormationFireLasers {
     private float timeBetweenShots = 2f; // Delay between firing each row
     private int currentRow = 0;          // Start at the top row
 
-    public FireRowByRowBottomUp(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireRowByRowBottomUp(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 

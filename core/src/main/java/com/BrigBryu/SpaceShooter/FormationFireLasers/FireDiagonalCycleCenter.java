@@ -19,8 +19,8 @@ public class FireDiagonalCycleCenter extends FormationFireLasers {
     // 2: top-right to bottom-left
     // 3: bottom-left to top-right
 
-    public FireDiagonalCycleCenter(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireDiagonalCycleCenter(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 

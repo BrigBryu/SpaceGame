@@ -15,8 +15,8 @@ public class FireRandomBurst extends FormationFireLasers {
     private int burstSize = 5; // number of ships to fire each time
     private Random random = new Random();
 
-    public FireRandomBurst(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireRandomBurst(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 

@@ -17,8 +17,8 @@ public class FireRandomChuncks extends FormationFireLasers {
 
     private int rowWidth = 2;
 
-    public FireRandomChuncks(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireRandomChuncks(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 

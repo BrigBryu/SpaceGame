@@ -13,8 +13,8 @@ public class FireTopMost extends FormationFireLasers {
     private float timeBetweenShots = .7f;
     private int currentRow = -1;
 
-    public FireTopMost(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireTopMost(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 

@@ -2,7 +2,6 @@ package com.BrigBryu.SpaceShooter.FormationFireLasers;
 
 import com.BrigBryu.SpaceShooter.gameObjects.Laser;
 import com.BrigBryu.SpaceShooter.gameObjects.Ship;
-import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,11 +9,10 @@ import java.util.List;
 
 public class FireAllDiagonalsCycle extends FormationFireLasers {
     private float timeSinceLastShot = 0;
-    private float timeBetweenShots = 0.8f; // Delay between firing each diagonal
-    private int currentDirection = 0; // will cycle through 0,1,2,3
+    private float timeBetweenShots = 0.8f; 
+    private int currentDirection = 0; // cycle through 0,1,2,3
     private int currentDiagonalIndex = 0;
 
-    // We'll store all diagonals for each direction
     // Each entry in allDiagonals[direction] is a list of start points (row,col) for that direction
     private List<List<int[]>> allDiagonals;
 
@@ -24,8 +22,8 @@ public class FireAllDiagonalsCycle extends FormationFireLasers {
     // 2: top-right to bottom-left (/)
     // 3: bottom-left to top-right (/ reversed)
 
-    public FireAllDiagonalsCycle(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireAllDiagonalsCycle(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 

@@ -1,7 +1,8 @@
 package com.BrigBryu.SpaceShooter;
 
 import com.BrigBryu.SpaceShooter.formations.Formation;
-import com.BrigBryu.SpaceShooter.formations.GrayCircleIn;
+import com.BrigBryu.SpaceShooter.formations.FormationFactory;
+import com.BrigBryu.SpaceShooter.formations.GrayFormationFactory;
 import com.BrigBryu.SpaceShooter.gameObjects.*;
 import com.BrigBryu.SpaceShooter.helper.FormationParser;
 import com.BrigBryu.SpaceShooter.helper.TextureManager;
@@ -28,7 +29,6 @@ public class GameScreen implements Screen {
 
     //Helper
     private TextureManager textureManager;
-    private FormationParser formationParser;
 
     //graphics
     private SpriteBatch spriteBatch;
@@ -51,8 +51,8 @@ public class GameScreen implements Screen {
 
     //game objects
     private PlayerShip playerShip;
-    private Formation grayCircleInFormation;
-    //private LinkedList<Ship> enemyShips;
+    private Formation formation;
+    private FormationFactory formationFactory;
     private LinkedList<Explosion> explosions;
 
     private LinkedList<Laser> playerLasers;
@@ -100,21 +100,20 @@ public class GameScreen implements Screen {
         int size = 8;
         int sizeLaser = 9;
         playerShip = new PlayerShip(WORLD_WIDTH/2, WORLD_HEIGHT/4,
-            size, size, 36,5, 25, 1, 0,
-            3, 2,45,1f,
+            size, size, 36,5, 25, 5, 0,
+            3, 2,150,.2f,
             TextureManager.getTexture("playerShipGray"),
             TextureManager.getTexture("shield"),
             TextureManager.getTexture("bulletArc1"));
 
-//        enemyShips = new LinkedList<>();
-        grayCircleInFormation = new GrayCircleIn();
+        formationFactory = new GrayFormationFactory();
+        formation = formationFactory.createFormation(1.0f);
         playerLasers = new LinkedList<>();
         enemyLasers = new LinkedList<>();
         explosions = new LinkedList<>();
 
         spriteBatch = new SpriteBatch(); //Collects all graphical changes and displays all at once
 
-        formationParser = new FormationParser();
     }
 
     @Override
@@ -138,26 +137,13 @@ public class GameScreen implements Screen {
         if(!deathTimerRun) {
             detectInput(deltaTime);
             playerShip.update(deltaTime);
-
-            spawnEnemyShips(deltaTime);
+            spawnEnemyFormation(deltaTime);
         }
 
-//        ListIterator<Ship> iterator = enemyShips.listIterator();
-        grayCircleInFormation.update(deltaTime);
-        enemyLasers.addAll(grayCircleInFormation.fireLasers(deltaTime));
-        ListIterator<Ship> iterator = grayCircleInFormation.getShipList().listIterator();
-
-        while (iterator.hasNext()) {
-            Ship enemyShip = iterator.next();
-            //moveEnemy(enemyShip, deltaTime);
-            //fireEnemyLaser(enemyShip);
-            //enemyShip.update(deltaTime);
-            enemyShip.draw(spriteBatch);
-        }
-
-
-
-
+        formation.update(deltaTime);
+        formation.draw(spriteBatch);
+        enemyLasers.addAll(formation.fireLasers(deltaTime));
+        
         //player
         if(!deathTimerRun) {
             playerShip.draw(spriteBatch);
@@ -187,23 +173,25 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void spawnEnemyShips(float deltaTime){
-//        if(enemyShips.isEmpty()) {
-        if(grayCircleInFormation.getShipList().isEmpty()) {
+    private void spawnEnemyFormation(float deltaTime) {
+        if(formation.getShipList().isEmpty()) {
             timeSinceEnemiesKilled += deltaTime;
         }
 
         if(timeSinceEnemiesKilled > waveBreakTime) {
-            //spawn wave
-//            enemyShips.add(new EnemyShip(WORLD_WIDTH / 2, WORLD_HEIGHT * 3 / 4,
-//                6, 4, 20, 1,
-//                3, 3, 45, 2f,
-//                TextureManager.getTexture("shipGray1"),
-//                TextureManager.getTexture("shield"),
-//                TextureManager.getTexture("bulletGray1")));
-            //enemyShips.add(new GrayEnemy1(WORLD_WIDTH / 2, WORLD_HEIGHT * 3 / 4));
-            //enemyShips.addAll(formationParser.getShips("assets/formationsSpawnPoints/grayCircle"));
-            grayCircleInFormation.resetShips();
+            // Debug prints
+            System.out.println("Creating new formation...");
+            
+            float difficulty = Math.min(2.0f, 1.0f + timeSinceEnemiesKilled / 60.0f);
+            formation = formationFactory.createFormation(difficulty);
+            
+            // Debug prints
+            System.out.println("Number of ships in formation: " + formation.getShipList().size());
+            for (Ship ship : formation.getShipList()) {
+                System.out.println("Ship position: x=" + ship.getBoundingBox().x + 
+                                 ", y=" + ship.getBoundingBox().y);
+            }
+            
             timeSinceEnemiesKilled = 0;
         }
     }
@@ -241,7 +229,7 @@ public class GameScreen implements Screen {
         ListIterator<Laser> laserListIterator = playerLasers.listIterator();
         while(laserListIterator.hasNext()){
             Laser laser = laserListIterator.next();
-            ListIterator<Ship> enemyShipListIterator = grayCircleInFormation.getShipList().listIterator();
+            ListIterator<Ship> enemyShipListIterator = formation.getShipList().listIterator();
             boolean hitOnce = false;
             while (enemyShipListIterator.hasNext()) {
                 Ship enemyShip = enemyShipListIterator.next();

@@ -6,10 +6,11 @@ import com.BrigBryu.SpaceShooter.helper.FormationParser;
 import java.util.List;
 
 public abstract class FormationMove {
-    protected static FormationParser parser = new FormationParser();
+    protected FormationParser parser;
     protected List<Ship> shipList;
-    public FormationMove(FormationParser parser) {
-        FormationMove.parser = parser;
+    
+    public FormationMove() {
+        this.parser = FormationParser.getInstance();
     }
 
     public void update(float deltaTime, List<Ship> shipList){

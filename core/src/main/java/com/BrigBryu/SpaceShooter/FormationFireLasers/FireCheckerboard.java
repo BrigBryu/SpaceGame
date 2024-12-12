@@ -12,8 +12,8 @@ public class FireCheckerboard extends FormationFireLasers {
     private float timeSinceLastShot = 0;
     private float timeBetweenShots = 3f;
 
-    public FireCheckerboard(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireCheckerboard(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 

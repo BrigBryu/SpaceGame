@@ -8,11 +8,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FormationParser {
+    // Singleton instance
+    private static FormationParser instance;
+    
     private int width, height;
     private float gridSpacingX, gridSpacingY;
     private float offsetX, offsetY;
 
-    public FormationParser(int width, int height, float gridSpacingX, float gridSpacingY, float offsetX, float offsetY) {
+    // Make constructor private
+    private FormationParser() {
+        this(12, 12, 8f, 8f, 10f, 88f);
+    }
+
+    private FormationParser(int width, int height, float gridSpacingX, float gridSpacingY, float offsetX, float offsetY) {
         this.width = width;
         this.height = height;
         this.gridSpacingX = gridSpacingX;
@@ -21,8 +29,12 @@ public class FormationParser {
         this.offsetY = offsetY;
     }
 
-    public FormationParser() {
-        this(12, 12, 8f, 8f, 10f, 88f);
+    // Thread-safe singleton getter
+    public static synchronized FormationParser getInstance() {
+        if (instance == null) {
+            instance = new FormationParser();
+        }
+        return instance;
     }
 
     public List<Ship> getShips(String filePath) {

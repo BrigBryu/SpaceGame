@@ -13,8 +13,8 @@ public class FireIfGroup extends FormationFireLasers {
     float timeSinceLastShot = 0;
     float timeBetweenShots = 3;
 
-    public FireIfGroup(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireIfGroup(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 

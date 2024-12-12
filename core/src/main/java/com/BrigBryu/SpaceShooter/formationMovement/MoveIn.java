@@ -18,14 +18,14 @@ public class MoveIn extends FormationMove {
     private int gridCenterI = 0;
     private int gridCenterJ = 0;
 
-    public MoveIn(FormationParser parser) {
-        super(parser);
+    public MoveIn() {
+        super();
         this.goals = new ArrayList<>();
         this.useDefaultMid = true;
     }
 
-    public MoveIn(FormationParser parser, List<int[]> goals, float goalDuration) {
-        super(parser);
+    public MoveIn(List<int[]> goals, float goalDuration) {
+        super();
         this.goals = goals;
         this.goalDuration = goalDuration;
     }

@@ -2,7 +2,6 @@ package com.BrigBryu.SpaceShooter.FormationFireLasers;
 
 import com.BrigBryu.SpaceShooter.gameObjects.Laser;
 import com.BrigBryu.SpaceShooter.gameObjects.Ship;
-import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,8 +13,8 @@ public class FireSpiral extends FormationFireLasers {
     private List<Ship> spiralOrder = new ArrayList<>();
     private int currentShipIndex = 0;
 
-    public FireSpiral(FormationParser parser, float difficulty) {
-        super(parser);
+    public FireSpiral(float difficulty) {
+        super();
         timeBetweenShots *= difficulty;
     }
 
@@ -27,7 +26,9 @@ public class FireSpiral extends FormationFireLasers {
         }
         timeSinceLastShot = 0;
 
-        if (spiralOrder.isEmpty() && shipList != null && !shipList.isEmpty()) {
+        // Rebuild spiral order each time to account for destroyed ships
+        spiralOrder.clear();
+        if (shipList != null && !shipList.isEmpty()) {
             // Build the spiral order
             Ship[][] formation = parser.shipsToGrid(shipList);
             int top = 0;
@@ -68,6 +69,9 @@ public class FireSpiral extends FormationFireLasers {
 
         List<Laser> lasers = new ArrayList<>();
         if (!spiralOrder.isEmpty()) {
+            // Reset index if it's beyond the current spiral size
+            currentShipIndex = currentShipIndex % spiralOrder.size();
+            
             Ship currentShip = spiralOrder.get(currentShipIndex);
             Laser[] firedLasers = currentShip.fireLasers();
             if (firedLasers != null) {
@@ -75,6 +79,7 @@ public class FireSpiral extends FormationFireLasers {
             }
             currentShipIndex = (currentShipIndex + 1) % spiralOrder.size();
         }
+
         return lasers;
     }
 }

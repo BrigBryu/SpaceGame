@@ -1,19 +1,29 @@
 package com.BrigBryu.SpaceShooter.formationMovement;
 
+import java.util.Random;
+
 import com.BrigBryu.SpaceShooter.gameObjects.Enemy;
 import com.BrigBryu.SpaceShooter.gameObjects.Ship;
-import com.BrigBryu.SpaceShooter.helper.FormationParser;
 
-public class MoveWeakUp extends FormationMove {
+public class FilterByType extends FormationMove {
     float timeSinceLastMove = 0;
     float updateFrequency = 1;
     float timeSinceStart = 0;
     float initialUpdateWaitTime = 1.5f;
+    int offsetFromHalfHeight = 0;
     boolean moveAwayFromPlayer = false;
     boolean weakerUp = true;
 
-    public MoveWeakUp(FormationParser parser) {
-        super(parser);        
+    public FilterByType() {
+        super();        
+        randomize();
+    }
+
+    private void randomize() {
+        Random random = new Random();
+        weakerUp = random.nextBoolean();
+         //moveAwayFromPlayer = random.nextBoolean();
+        offsetFromHalfHeight = random.nextInt(3);
     }
 
     @Override
@@ -39,7 +49,7 @@ public class MoveWeakUp extends FormationMove {
             }
         }
 
-        int halfHeight = formation.length;
+        int halfHeight = formation.length - offsetFromHalfHeight;
 
         if (moveAwayFromPlayer) {
             // Process from top to bottom when moving towards player
