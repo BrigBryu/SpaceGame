@@ -47,7 +47,6 @@ public class Formation {
             throw new IllegalStateException("Formation is not setup. Movement: " + isSetupMovement + 
                 " Fire: " + isSetupFire + " ShipFormation: " + isSetupShipFormation);
         }
-        System.out.println("Drawing formation with " + shipList.size() + " ships");
         for(Ship ship: shipList) {
             ship.draw(batch);
         }

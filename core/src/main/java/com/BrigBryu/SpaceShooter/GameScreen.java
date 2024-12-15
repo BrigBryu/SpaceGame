@@ -4,7 +4,10 @@ import com.BrigBryu.SpaceShooter.formations.Formation;
 import com.BrigBryu.SpaceShooter.formations.FormationFactory;
 import com.BrigBryu.SpaceShooter.formations.GrayFormationFactory;
 import com.BrigBryu.SpaceShooter.gameObjects.*;
-import com.BrigBryu.SpaceShooter.helper.FormationParser;
+import com.BrigBryu.SpaceShooter.gameObjects.uiElements.InputUpgradeSystem;
+import com.BrigBryu.SpaceShooter.gameObjects.uiElements.LibGDXUpgradeUI;
+import com.BrigBryu.SpaceShooter.gameObjects.uiElements.ShipUpgradeSystem;
+import com.BrigBryu.SpaceShooter.gameObjects.uiElements.UpgradeUI;
 import com.BrigBryu.SpaceShooter.helper.TextureManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -62,6 +65,12 @@ public class GameScreen implements Screen {
     private boolean deathTimerRun = false;
     private  float timeSinceDeath = 0;
 
+    //upgrades
+    private ShipUpgradeSystem upgradeSystem;
+    private float wavesSinceLastUpgrade = 0;
+    private static final float UPGRADE_INTERVAL = 1;
+    private boolean upgradeMenuActive = false;
+
     public GameScreen(){
         camera = new OrthographicCamera();
         viewport = new StretchViewport(WORLD_WIDTH,WORLD_HEIGHT,camera);
@@ -100,8 +109,8 @@ public class GameScreen implements Screen {
         int size = 8;
         int sizeLaser = 9;
         playerShip = new PlayerShip(WORLD_WIDTH/2, WORLD_HEIGHT/4,
-            size, size, 36,5, 25, 5, 0,
-            3, 2,150,.2f,
+            size, size, 36,5, 25, 2, 1,
+            3, 2,75,.5f,
             TextureManager.getTexture("playerShipGray"),
             TextureManager.getTexture("shield"),
             TextureManager.getTexture("bulletArc1"));
@@ -114,51 +123,76 @@ public class GameScreen implements Screen {
 
         spriteBatch = new SpriteBatch(); //Collects all graphical changes and displays all at once
 
+        UpgradeUI ui = new LibGDXUpgradeUI();
+        upgradeSystem = new InputUpgradeSystem(ui);
     }
 
     @Override
-    public void render(float deltaTime) { //remember back to front
-        //temp
-        System.out.print("Player health: " + playerShip.getHealth());
-        System.out.print(" Player shield: " + playerShip.getShield() + "\n\n");
-        if(deathTimerRun) {
-            System.out.println(timeSinceDeath + "adding " + deltaTime);
-            if (timeSinceDeath > 2) {
-                throw new RuntimeException("You Died!!!");
-            } else {
-                timeSinceDeath +=  deltaTime;
+public void render(float deltaTime) {
+    if(deathTimerRun) {
+        if (timeSinceDeath > 2) {
+            throw new RuntimeException("You Died!!!");
+        } else {
+            timeSinceDeath += deltaTime;
+        }
+    }
+
+    spriteBatch.begin();
+    renderBackGround(deltaTime);
+
+    if(!deathTimerRun && !upgradeMenuActive) {
+        detectInput(deltaTime);
+        playerShip.update(deltaTime);
+        spawnEnemyFormation(deltaTime);
+    }
+
+    if(!upgradeMenuActive) {    
+        formation.update(deltaTime);
+        enemyLasers.addAll(formation.fireLasers(deltaTime));
+    }
+
+    formation.draw(spriteBatch);
+
+
+    if(!deathTimerRun) {
+        playerShip.draw(spriteBatch);
+    }
+
+    renderLasers(deltaTime);
+    detectCollisions();
+    updateAndRenderExplosions(deltaTime);
+
+    spriteBatch.end();
+
+        checkUpgrades(deltaTime);
+    }
+
+    private void checkUpgrades(float deltaTime) {
+        // If it's time to show upgrades and not already active, show them
+        if (wavesSinceLastUpgrade >= UPGRADE_INTERVAL && !upgradeMenuActive) {
+            upgradeMenuActive = true;
+            upgradeSystem.showUpgradeOptions();
+        }
+
+        // If the upgrade menu is active, check for key presses
+        if (upgradeMenuActive) {
+            for (int i = 1; i <= 6; i++) {
+                int key = Input.Keys.NUM_1 + (i - 1); 
+                // Alternatively: Input.Keys.NUM_1, NUM_2, etc. directly
+                if (Gdx.input.isKeyJustPressed(key)) {
+                    if (upgradeSystem.isUpgradeAvailable(i)) {
+                        upgradeSystem.handleUpgrade(i, playerShip);
+                        // Once upgrade chosen, resume the game
+                        upgradeMenuActive = false;
+                        wavesSinceLastUpgrade = 0;
+                    } else {
+                        // If not available, you could show a message
+                    }
+                    break;
+                }
             }
         }
-
-
-        spriteBatch.begin(); //begins building a batch to draw
-        renderBackGround(deltaTime);
-
-        if(!deathTimerRun) {
-            detectInput(deltaTime);
-            playerShip.update(deltaTime);
-            spawnEnemyFormation(deltaTime);
-        }
-
-        formation.update(deltaTime);
-        formation.draw(spriteBatch);
-        enemyLasers.addAll(formation.fireLasers(deltaTime));
-        
-        //player
-        if(!deathTimerRun) {
-            playerShip.draw(spriteBatch);
-        }
-        //draw lasers and remove old lasers
-        renderLasers(deltaTime);
-
-        //laser and ship collision
-        detectCollisions();
-
-        //explosions
-        updateAndRenderExplosions(deltaTime);
-
-        spriteBatch.end();
-    }
+    }    
 
     private void updateAndRenderExplosions(float deltaTime){
         ListIterator<Explosion> explosionListIterator = explosions.listIterator();
@@ -177,24 +211,16 @@ public class GameScreen implements Screen {
         if(formation.getShipList().isEmpty()) {
             timeSinceEnemiesKilled += deltaTime;
         }
-
-        if(timeSinceEnemiesKilled > waveBreakTime) {
-            // Debug prints
+    
+        if(timeSinceEnemiesKilled > waveBreakTime && !upgradeMenuActive) {
             System.out.println("Creating new formation...");
-            
+    
             float difficulty = Math.min(2.0f, 1.0f + timeSinceEnemiesKilled / 60.0f);
             formation = formationFactory.createFormation(difficulty);
-            
-            // Debug prints
-            System.out.println("Number of ships in formation: " + formation.getShipList().size());
-            for (Ship ship : formation.getShipList()) {
-                System.out.println("Ship position: x=" + ship.getBoundingBox().x + 
-                                 ", y=" + ship.getBoundingBox().y);
-            }
-            
             timeSinceEnemiesKilled = 0;
+            wavesSinceLastUpgrade++;
         }
-    }
+    }    
 
     private void moveEnemy(EnemyShipOld enemyShip, float deltaTime){
         float leftLimit, rightLimit, upLimit, downLimit;
@@ -224,6 +250,7 @@ public class GameScreen implements Screen {
 
         enemyShip.translate(moveX,moveY);
     }
+
     private void detectCollisions(){
         //check player laser intersects an emeny
         ListIterator<Laser> laserListIterator = playerLasers.listIterator();
@@ -310,14 +337,8 @@ public class GameScreen implements Screen {
         }
     }
 
-    private void fireEnemyLaser(Ship enemyShip) {
-        if(enemyShip.canFireLaser()){
-            Laser[] lasers = enemyShip.fireLasers();
-            enemyLasers.addAll(Arrays.asList(lasers));
-        }
-    }
-
     private void renderLasers(float deltaTime){
+
         //create lasers
         if(playerShip.canFireLaser()){
             Laser[] lasers = playerShip.fireLasers();
@@ -346,6 +367,7 @@ public class GameScreen implements Screen {
             }
         }
     }
+
     private void renderBackGround(float deltaTime){
         backGroundOffsets[0] += 0;
         backGroundOffsets[1] += deltaTime * (backGroundMaxScrollingSpeed/4);
@@ -365,7 +387,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width,height,true);
+        viewport.update(width,height,true); 
         spriteBatch.setProjectionMatrix(camera.combined);
     }
 

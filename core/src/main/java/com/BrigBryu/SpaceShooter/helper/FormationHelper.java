@@ -39,7 +39,7 @@ public class FormationHelper {
     public static int getNumberOfEnemies(int sizeOfSearch, Ship[][] formation, int row, int col) {
         int count = 0;
         if(row < 0 || col < 0 || row + sizeOfSearch >= formation.length || col + sizeOfSearch>= formation[0].length) {
-            System.out.println("Index for getNumberOfEnemies out of bounds check FormationUpdate");
+            // System.out.println("Index for getNumberOfEnemies out of bounds check FormationUpdate");
             return 0;
         }
 
