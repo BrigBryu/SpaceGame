@@ -1,4 +1,4 @@
-package com.BrigBryu.SpaceShooter;
+package com.BrigBryu.SpaceShooter.screens;
 
 import com.BrigBryu.SpaceShooter.formations.Formation;
 import com.BrigBryu.SpaceShooter.formations.FormationFactory;
@@ -146,7 +146,7 @@ public void render(float deltaTime) {
         spawnEnemyFormation(deltaTime);
     }
 
-    if(!upgradeMenuActive) {    
+    if(!upgradeMenuActive) {
         formation.update(deltaTime);
         enemyLasers.addAll(formation.fireLasers(deltaTime));
     }
@@ -177,7 +177,7 @@ public void render(float deltaTime) {
         // If the upgrade menu is active, check for key presses
         if (upgradeMenuActive) {
             for (int i = 1; i <= 6; i++) {
-                int key = Input.Keys.NUM_1 + (i - 1); 
+                int key = Input.Keys.NUM_1 + (i - 1);
                 // Alternatively: Input.Keys.NUM_1, NUM_2, etc. directly
                 if (Gdx.input.isKeyJustPressed(key)) {
                     if (upgradeSystem.isUpgradeAvailable(i)) {
@@ -192,7 +192,7 @@ public void render(float deltaTime) {
                 }
             }
         }
-    }    
+    }
 
     private void updateAndRenderExplosions(float deltaTime){
         ListIterator<Explosion> explosionListIterator = explosions.listIterator();
@@ -211,16 +211,16 @@ public void render(float deltaTime) {
         if(formation.getShipList().isEmpty()) {
             timeSinceEnemiesKilled += deltaTime;
         }
-    
+
         if(timeSinceEnemiesKilled > waveBreakTime && !upgradeMenuActive) {
             System.out.println("Creating new formation...");
-    
+
             float difficulty = Math.min(2.0f, 1.0f + timeSinceEnemiesKilled / 60.0f);
             formation = formationFactory.createFormation(difficulty);
             timeSinceEnemiesKilled = 0;
             wavesSinceLastUpgrade++;
         }
-    }    
+    }
 
     private void moveEnemy(EnemyShipOld enemyShip, float deltaTime){
         float leftLimit, rightLimit, upLimit, downLimit;
@@ -387,7 +387,7 @@ public void render(float deltaTime) {
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width,height,true); 
+        viewport.update(width,height,true);
         spriteBatch.setProjectionMatrix(camera.combined);
     }
 

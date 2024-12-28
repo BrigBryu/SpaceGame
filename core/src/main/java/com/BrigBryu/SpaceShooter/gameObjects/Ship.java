@@ -20,7 +20,8 @@ public abstract class Ship implements Boundable {
 
     //laser info
     protected float laserWidth, laserHeight;
-    protected float laserSpeed, laserTimeBetweenShots;
+    public float laserSpeed;
+    public float laserTimeBetweenShots;
     protected float timeSinceLastShot = 0;
     protected float damagePerShot;
     /**
